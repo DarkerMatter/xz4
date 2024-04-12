@@ -1,0 +1,50 @@
+/* Reset some basic elements */
+body, h1, p, a {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Style for the body */
+body {
+    background-color: #1f2226;
+    color: #ffffff;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+/* Style for headers */
+h1 {
+    color: #ffffff;
+    background-color: #ad1f56;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 24px;
+}
+
+/* Paragraph styles */
+p {
+    margin-bottom: 10px;
+    padding-left: 20px;
+}
+
+/* Link styles */
+a {
+    color: #0066cc;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Additional styling for special paragraphs like the footer */
+p:last-of-type {
+    color: #666;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+}
