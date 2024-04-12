@@ -8,9 +8,27 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'logo.png')));
 
+// Function to increment and save download data for any downloaded file
+const incrementDownload = () => {
+  // Load the current data
+  const data = loadData();
+
+  // Increment the total downloads count
+  data.totalDownloads++;
+
+  // Write the updated data back to the file
+  fs.writeFileSync(path.join(__dirname, 'downloadData.json'), JSON.stringify(data), { encoding: 'utf-8' });
+}
+
+const loadData = () => {
+  const fileData = fs.readFileSync(path.join(__dirname, 'downloadData.json'), 'utf-8');
+  return JSON.parse(fileData);
+};
+
 
 // replace your 'app.get('/')' with this:
 app.get('/', function(req, res) {
+  const downloadData = loadData();
   fs.readdir('./ct', function(err, filesCt) {
     fs.readdir('./bundle', function(err, filesBundle) {
       if (err) {
@@ -32,6 +50,7 @@ app.get('/', function(req, res) {
       let previousVersionBundle = sortedByVersionBundle.length > 1 ? sortedByVersionBundle[1][1] : "N/A";
 
       res.render('index', {
+        totalDownloads: downloadData.totalDownloads,
         latestVersionCt: latestVersionCt,
         previousVersionCt: previousVersionCt,
         latestVersionBundle: latestVersionBundle,
@@ -60,6 +79,7 @@ app.get('/ct/latest', function(req, res) {
       console.error("Could not list the directory.", err);
       process.exit(1);
     }
+    incrementDownload();
 
     // Extract version number and the full file name from each file, and store in an array of arrays
     let versionedFiles = files.map(file => {
@@ -98,6 +118,7 @@ app.get('/ct/previous', function(req, res) {
       console.error("Could not list the directory.", err);
       process.exit(1);
     }
+    incrementDownload();
 
     // Extract version number and the full file name from each file, and store in an array of arrays
     let versionedFiles = files.map(file => {
@@ -136,6 +157,7 @@ app.get('/bundle/latest', function(req, res) {
       console.error("Could not list the directory.", err);
       process.exit(1);
     }
+    incrementDownload();
 
     // Extract version number and the full file name from each file, and store in an array of arrays
     let versionedFiles = files.map(file => {
@@ -174,6 +196,7 @@ app.get('/bundle/previous', function(req, res) {
       console.error("Could not list the directory.", err);
       process.exit(1);
     }
+    incrementDownload();
 
     // Extract version number and the full file name from each file, and store in an array of arrays
     let versionedFiles = files.map(file => {
