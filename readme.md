@@ -1,7 +1,7 @@
 # 🚀 XZ4 site
 
 ## 📖 Description
-This Node.js application utilizes Express.js to handle versioning of files and download routes. It supports handling the latest and previous versions of files saved in the 'ct' and 'bundle' directories. File versioning information is visible on the application's home page.
+Simple website that serves latest copies of the cheat tables and bundle.
 
 ## 💼 Features
 
