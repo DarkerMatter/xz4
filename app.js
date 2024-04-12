@@ -229,6 +229,12 @@ function getPreviousFile(files) {
   return sortedByVersion.length > 1 ? sortedByVersion[1][1] : null;
 }
 
+app.get('/ce', function(req, res){
+  const file = `${__dirname}/cheatengine/CheatEngine75.exe`;
+  incrementDownload();
+  res.download(file); // Set disposition and send it.
+});
+
 app.use(function(req, res, next) {
   res.status(404);
   res.render('404');
