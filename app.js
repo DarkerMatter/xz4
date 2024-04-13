@@ -3,10 +3,19 @@ const app = express();
 const path = require('path');
 const fs = require('fs');
 const semver = require('semver');
+const rateLimit = require("express-rate-limit");
 var favicon = require('serve-favicon');
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'logo.png')));
+
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50 // limit each IP to 100 requests per windowMs
+});
+
+app.use(limiter);
 
 // Function to increment and save download data for any downloaded file
 const incrementDownload = () => {
