@@ -41,6 +41,23 @@ a:hover {
     text-decoration: underline;
 }
 
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #007BFF;
+    border-radius: 5px;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
 /* Additional styling for special paragraphs like the footer */
 p:last-of-type {
     color: #666;

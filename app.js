@@ -2,9 +2,10 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const fs = require('fs');
-const semver = require('semver');
 const rateLimit = require("express-rate-limit");
 var favicon = require('serve-favicon');
+const axios = require('axios');
+require('dotenv').config();
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'logo.png')));
@@ -19,13 +20,8 @@ app.use(limiter);
 
 // Function to increment and save download data for any downloaded file
 const incrementDownload = () => {
-  // Load the current data
   const data = loadData();
-
-  // Increment the total downloads count
   data.totalDownloads++;
-
-  // Write the updated data back to the file
   fs.writeFileSync(path.join(__dirname, 'downloadData.json'), JSON.stringify(data), { encoding: 'utf-8' });
 }
 
@@ -38,205 +34,57 @@ const loadData = () => {
 // replace your 'app.get('/')' with this:
 app.get('/', function(req, res) {
   const downloadData = loadData();
-  fs.readdir('./ct', function(err, filesCt) {
-    fs.readdir('./bundle', function(err, filesBundle) {
-      if (err) {
-        console.error("Could not list the directory.", err);
-        process.exit(1);
-      }
-
-      // Extract version number and the full file name for 'ct' and 'bundle' from each file, and store in an array of arrays
-      let versionedFilesCt = getVersionedFiles(filesCt);
-      let versionedFilesBundle = getVersionedFiles(filesBundle);
-
-      // Conditionally set latest version and previous version for 'ct' and 'bundle'
-      let sortedByVersionCt = versionedFilesCt.sort((a, b) => semver.rcompare(a[0], b[0]));
-      let latestVersionCt = sortedByVersionCt.length > 0 ? sortedByVersionCt[0][1] : "N/A";
-      let previousVersionCt = sortedByVersionCt.length > 1 ? sortedByVersionCt[1][1] : "N/A";
-
-      let sortedByVersionBundle = versionedFilesBundle.sort((a, b) => semver.rcompare(a[0], b[0]));
-      let latestVersionBundle = sortedByVersionBundle.length > 0 ? sortedByVersionBundle[0][1] : "N/A";
-      let previousVersionBundle = sortedByVersionBundle.length > 1 ? sortedByVersionBundle[1][1] : "N/A";
-
-      res.render('index', {
-        totalDownloads: downloadData.totalDownloads,
-        latestVersionCt: latestVersionCt,
-        previousVersionCt: previousVersionCt,
-        latestVersionBundle: latestVersionBundle,
-        previousVersionBundle: previousVersionBundle
-      });
-    });
+  res.render('index', {
+    totalDownloads: downloadData.totalDownloads,
   });
 });
 
-function getVersionedFiles(files) {
-  return files.map(file => {
-    let versionMatch = file.match(/(\d+\.\d+\.\d+)/);
-    if (versionMatch) {
-      return [versionMatch[0], file];
-    } else {
-      return null;
-    }
-  }).filter(file => file !== null); // Filter out any files that do not include a version number
-}
 
 
+app.get('/ct/latest', async function(req, res) {
+  try {
+    const url = `https://drm.fts.gg/v2/download?latest&subfolder=ct&apikey=${process.env.API_KEY}`;
 
-app.get('/ct/latest', function(req, res) {
-  fs.readdir('./ct', function(err, files) {
-    if (err) {
-      console.error("Could not list the directory.", err);
-      process.exit(1);
-    }
-    incrementDownload();
+    axios({
+      method: 'get',
+      url: url,
+      responseType: 'stream'
+    })
+        .then(function(response) {
+          res.setHeader("Content-Type", "application/octet-stream");
+          res.setHeader("Content-Disposition", 'attachment; filename="latest.ct"');
+          response.data.pipe(res);
+        });
 
-    // Extract version number and the full file name from each file, and store in an array of arrays
-    let versionedFiles = files.map(file => {
-      let versionMatch = file.match(/(\d+\.\d+\.\d+)/);
-      if (versionMatch) {
-        return [versionMatch[0], file];
-      } else {
-        return null;
-      }
-    }).filter(file => file !== null); // Filter out any bundle that do not include a version number
-
-    let latestFileVersion = getLatestFile(versionedFiles);
-    let latestFile = './ct/' + latestFileVersion;
-
-    console.log('Attempting to download file from path:', latestFile);
-    if (fs.existsSync(latestFile)) {
-      res.download(latestFile); // Deliver the file for download
-    } else {
-      res.status(404).send('File not found or no latest version available.');
-    }
-  });
+  } catch (error) {
+    console.error("Could not download the file.", error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-// Adjust the getLatestFile to handle our different data structure
-function getLatestFile(files) {
-  // Sort the array to have highest version number first
-  let sortedByVersion = files.sort((a, b) => semver.rcompare(a[0], b[0]));
 
-  // Return the full file name of the latest version
-  return sortedByVersion.length > 0 ? sortedByVersion[0][1] : null;
-}
 
-app.get('/ct/previous', function(req, res) {
-  fs.readdir('./ct', function(err, files) {
-    if (err) {
-      console.error("Could not list the directory.", err);
-      process.exit(1);
-    }
-    incrementDownload();
+app.get('/bundle/latest', async function(req, res) {
+  try {
+    const url = `https://drm.fts.gg/v2/download?latest&subfolder=bundle&apikey=${process.env.API_KEY}`;
 
-    // Extract version number and the full file name from each file, and store in an array of arrays
-    let versionedFiles = files.map(file => {
-      let versionMatch = file.match(/(\d+\.\d+\.\d+)/);
-      if (versionMatch) {
-        return [versionMatch[0], file];
-      } else {
-        return null;
-      }
-    }).filter(file => file !== null); // Filter out any bundle that do not include a version number
+    axios({
+      method: 'get',
+      url: url,
+      responseType: 'stream'
+    })
+        .then(function(response) {
+          res.setHeader("Content-Type", "application/octet-stream");
+          res.setHeader("Content-Disposition", 'attachment; filename="latest.rar"');
+          response.data.pipe(res);
+        });
 
-    let previousFileVersion = getPreviousFile(versionedFiles);
-    let previousFile = './ct/' + previousFileVersion;
-
-    console.log('Attempting to download file from path:', previousFile);
-    if (fs.existsSync(previousFile)) {
-      res.download(previousFile); // Deliver the file for download
-    } else {
-      res.status(404).send('File not found or no previous version available.');
-    }
-  });
+  } catch (error) {
+    console.error("Could not download the file.", error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-// getPreviousFile function to handle the data structure
-function getPreviousFile(files) {
-  // Sort the array to have highest version number first
-  let sortedByVersion = files.sort((a, b) => semver.rcompare(a[0], b[0]));
-
-  // Return the full file name of the previous version
-  return sortedByVersion.length > 1 ? sortedByVersion[1][1] : null;
-}
-
-app.get('/bundle/latest', function(req, res) {
-  fs.readdir('./bundle', function(err, files) {
-    if (err) {
-      console.error("Could not list the directory.", err);
-      process.exit(1);
-    }
-    incrementDownload();
-
-    // Extract version number and the full file name from each file, and store in an array of arrays
-    let versionedFiles = files.map(file => {
-      let versionMatch = file.match(/(\d+\.\d+\.\d+)/);
-      if (versionMatch) {
-        return [versionMatch[0], file];
-      } else {
-        return null;
-      }
-    }).filter(file => file !== null); // Filter out any bundle that do not include a version number
-
-    let latestFileVersion = getLatestFile(versionedFiles);
-    let latestFile = './bundle/' + latestFileVersion;
-
-    console.log('Attempting to download file from path:', latestFile);
-    if (fs.existsSync(latestFile)) {
-      res.download(latestFile); // Deliver the file for download
-    } else {
-      res.status(404).send('File not found or no latest version available.');
-    }
-  });
-});
-
-// Adjust the getLatestFile to handle our different data structure
-function getLatestFile(files) {
-  // Sort the array to have highest version number first
-  let sortedByVersion = files.sort((a, b) => semver.rcompare(a[0], b[0]));
-
-  // Return the full file name of the latest version
-  return sortedByVersion.length > 0 ? sortedByVersion[0][1] : null;
-}
-
-app.get('/bundle/previous', function(req, res) {
-  fs.readdir('./bundle', function(err, files) {
-    if (err) {
-      console.error("Could not list the directory.", err);
-      process.exit(1);
-    }
-    incrementDownload();
-
-    // Extract version number and the full file name from each file, and store in an array of arrays
-    let versionedFiles = files.map(file => {
-      let versionMatch = file.match(/(\d+\.\d+\.\d+)/);
-      if (versionMatch) {
-        return [versionMatch[0], file];
-      } else {
-        return null;
-      }
-    }).filter(file => file !== null); // Filter out any bundle that do not include a version number
-
-    let previousFileVersion = getPreviousFile(versionedFiles);
-    let previousFile = './bundle/' + previousFileVersion;
-
-    console.log('Attempting to download file from path:', previousFile);
-    if (fs.existsSync(previousFile)) {
-      res.download(previousFile); // Deliver the file for download
-    } else {
-      res.status(404).send('File not found or no previous version available.');
-    }
-  });
-});
-
-// getPreviousFile function to handle the data structure
-function getPreviousFile(files) {
-  // Sort the array to have highest version number first
-  let sortedByVersion = files.sort((a, b) => semver.rcompare(a[0], b[0]));
-
-  // Return the full file name of the previous version
-  return sortedByVersion.length > 1 ? sortedByVersion[1][1] : null;
-}
 
 app.get('/ce', function(req, res){
   const file = `${__dirname}/cheatengine/CheatEngine75.exe`;
