@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Jealousyaf Cheats Admin Page</title>
+    <link rel="icon" type="image/png" href="/logo.png">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <link rel='stylesheet' href='/styles/styles.css' />
+
+</head>
+<body>
+<!-- Navigation bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">Jealousyaf Cheats</a>
+
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                Welcome, <%= username %>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" href="/api/myapikey">My API Key</a></li>
+                <li><a class="dropdown-item" target="_blank" href="https://github.com/DarkerMatter/xz4">Github Repo</a></li>
+                <% if (permissionsLevel >= 2) { %>
+                    <li><a class="dropdown-item" href="/admin">Admin</a></li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <h1>Admin Page</h1>
+    <div id="userControl">
+        <h2>User Control</h2>
+        <form id="banUserForm">
+            <label for="apiKey">Your API Key:</label>
+            <input type="text" id="apiKey" name="apiKey">
+            <label for="userID">User ID:</label>
+            <input type="text" id="userID" name="userID">
+            <button type="submit" class="btn btn-danger">Ban User</button>
+        </form>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    document.getElementById('banUserForm').addEventListener('submit', function(event) {
+        // Prevent the form from submitting normally
+        event.preventDefault();
+
+        const apiKey = document.getElementById('apiKey').value;
+        const userID = document.getElementById('userID').value;
+
+        // Make sure a user ID was entered
+        if (!userID) {
+            alert('You must enter a user ID.');
+            return;
+        }
+
+        // Make sure an API key was entered
+        if (!apiKey) {
+            alert('You must enter your API key.');
+            return;
+        }
+
+        // Send a POST request to the ban user route
+        fetch('/api/admin/ban', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': apiKey
+            },
+            body: JSON.stringify({ userId: userID })
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Show a message with the result
+                alert(data.success ? data.success : data.error);
+            })
+            .catch(err => alert(err));
+    });
+</script>
+<script>
+    document.querySelector("[href='/api/myapikey']")
+        .addEventListener('click', function(event) {
+            event.preventDefault();
+
+            fetch('/api/getkey', {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    window.alert(`Your API key is: ${data.apiKey}`);
+                })
+                .catch(error => console.error('Error:', error));
+        });
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>
