@@ -76,8 +76,6 @@ router.get('/auth/discord/callback',
 );
 
 router.get('/dashboard', checkAuthentication, function(req, res) {
-  const rawData = fs.readFileSync('downloadData.json');
-  const parsedData = JSON.parse(rawData);
   const username = req.user.username;
 
   db.get(`SELECT * from users where username=?`, [username], function(err, user) {
@@ -88,7 +86,7 @@ router.get('/dashboard', checkAuthentication, function(req, res) {
       return res.status(404).send('User not found');
     }
     const permissionsLevel = Number(user.permissionsLevel);
-    res.render('dashboard', { user: req.user, totalDownloads: parsedData.totalDownloads, username: username, permissionsLevel: permissionsLevel });
+    res.render('dashboard', { user: req.user, username: username, permissionsLevel: permissionsLevel });
   });
 });
 
@@ -343,8 +341,6 @@ router.post('/api/admin/ban', checkApiKeyAndPermissions, async(req, res) => {
 });
 
 router.get('/admin', checkAuthentication, checkPermissions, function(req, res) {
-    const rawData = fs.readFileSync('downloadData.json');
-    const parsedData = JSON.parse(rawData);
     const username = req.user.username;
 
     db.get(`SELECT * from users where username=?`, [username], function(err, user) {
@@ -355,7 +351,7 @@ router.get('/admin', checkAuthentication, checkPermissions, function(req, res) {
             return res.status(404).send('User not found');
         }
         const permissionsLevel = Number(user.permissionsLevel);
-        res.render('admin', { user: req.user, totalDownloads: parsedData.totalDownloads, username: username, permissionsLevel: permissionsLevel });
+        res.render('admin', { user: req.user, username: username, permissionsLevel: permissionsLevel });
     });
 });
 

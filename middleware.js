@@ -25,10 +25,7 @@ let db = new sqlite3.Database(path.join(__dirname, 'db', 'users.db'), (err) => {
     });
 });
 
-function loadData() {
-    const fileData = fs.readFileSync(path.join(__dirname, 'downloadData.json'), 'utf-8');
-    return JSON.parse(fileData);
-}
+
 
 function checkAuthentication(req, res, next) {
     console.log('Check Authentication triggered'); // Log when the function is triggered
@@ -120,7 +117,6 @@ function checkAuth(req, res, next) {
 }
 
 module.exports = {
-    loadData,
     checkAuthentication,
     checkAuth,
     db,
