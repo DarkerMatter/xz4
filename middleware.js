@@ -53,7 +53,6 @@ function checkAuthentication(req, res, next) {
 function checkPermissions(req, res, next) {
     var db = new sqlite3.Database('./db/users.db', sqlite3.OPEN_READONLY, (err) => {
         if (err) {
-            console.error(err.message);
             return next(err);  // Pass error to Express
         }
     });
@@ -69,7 +68,6 @@ function checkPermissions(req, res, next) {
         });
 
         if(err) {
-            console.error(err);
             return next(err);  // Pass error to Express
         }
 
@@ -90,7 +88,6 @@ function checkApiKeyAndPermissions(req, res, next) {
 
     const db = new sqlite3.Database('./db/users.db', sqlite3.OPEN_READONLY, (err) => {
         if (err) {
-            console.error(err.message);
             return next(err);
         }
     });
@@ -101,12 +98,10 @@ function checkApiKeyAndPermissions(req, res, next) {
 
         db.close((err) => {
             if (err) {
-                console.error(err.message);
             }
         });
 
         if(err) {
-            console.error(err);
             return next(err);  // Pass error to Express
         }
 
@@ -117,6 +112,7 @@ function checkApiKeyAndPermissions(req, res, next) {
         next();
     });
 }
+
 
 function checkAuth(req, res, next) {
     if (req.isAuthenticated()) return next();

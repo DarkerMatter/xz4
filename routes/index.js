@@ -101,6 +101,9 @@ router.get('/api/ct/latest', function(req, res) {
             return res.status(500).json({ error: 'Error while connecting to the database' });
         }
     });
+    fs.appendFile('logs/downloads.txt', `User: ${userApiKey} downloaded CT\n`, function (err) {
+        if (err) console.error('Error on logging: ', err);
+    });
 
     if(!userApiKey) {
         const getkeyURL = `${req.protocol}://${req.get('host')}/api/getkey`;
@@ -133,7 +136,6 @@ router.get('/api/ct/latest', function(req, res) {
                 });
             })
             .catch(error => {
-                console.log(error);
                 return res.status(500).json({error: 'Error while fetching API key'});
             });
     } else {
@@ -171,15 +173,6 @@ function downloadCTWithKey(apiKey, res) {
             // Set the headers to provide a file for download
             res.setHeader('Content-Disposition', 'attachment; filename=latest.ct');
             response.data.pipe(res);
-
-            // After piping the data to response, increment the download count
-            readFile('downloadData.json', 'utf-8')
-                .then(data => {
-                    let jsonData = JSON.parse(data);
-                    jsonData.totalDownloads += 1;
-                    return writeFile('downloadData.json', JSON.stringify(jsonData));
-                })
-                .catch(err => console.error('Error reading or writing downloadData.json: ', err));
         })
         .catch(err => {
             console.error(err);
@@ -195,6 +188,9 @@ router.get('/api/bundle/latest', function(req, res) {
             console.error(err.message);
             return res.status(500).json({ error: 'Error while connecting to the database' });
         }
+    });
+    fs.appendFile('logs/downloads.txt', `User: ${userApiKey} downloaded Bundle\n`, function (err) {
+        if (err) console.error('Error on logging: ', err);
     });
 
     if(!userApiKey) {
@@ -228,7 +224,6 @@ router.get('/api/bundle/latest', function(req, res) {
                 });
             })
             .catch(error => {
-                console.log(error);
                 return res.status(500).json({error: 'Error while fetching API key'});
             });
     } else {
@@ -268,14 +263,6 @@ function downloadBundleWithKey(apiKey, res) {
             res.setHeader('Content-Disposition', 'attachment; filename=latest.zip');
             response.data.pipe(res);
 
-            // After piping the data to response, increment the download count
-            readFile('downloadData.json', 'utf-8')
-                .then(data => {
-                    let jsonData = JSON.parse(data);
-                    jsonData.totalDownloads += 1;
-                    return writeFile('downloadData.json', JSON.stringify(jsonData));
-                })
-                .catch(err => console.error('Error reading or writing downloadData.json: ', err));
         })
         .catch(err => {
             console.error(err);
