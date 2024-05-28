@@ -136,3 +136,4 @@ package-lock.json
 !/.env
 /.env
 !/package-lock.json
+package-lock.zip
