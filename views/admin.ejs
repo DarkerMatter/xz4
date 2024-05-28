@@ -23,7 +23,7 @@
                 Welcome, <%= username %>
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" href="/api/myapikey">My API Key</a></li>
+                <li><a class="dropdown-item" href="/api/getkey">My API Key</a></li>
                 <li><a class="dropdown-item" target="_blank" href="https://github.com/DarkerMatter/xz4">Github Repo</a></li>
                 <% if (permissionsLevel >= 2) { %>
                     <li><a class="dropdown-item" href="/admin">Admin</a></li>
@@ -46,6 +46,7 @@
         </form>
     </div>
 </div>
+<p>Made by <a href="https://darkermatter.net" target="_blank">DarkerMatter</a></p>
 
 <!-- Scripts -->
 <script>
@@ -86,7 +87,7 @@
     });
 </script>
 <script>
-    document.querySelector("[href='/api/myapikey']")
+    document.querySelector("[href='/api/getkey']")
         .addEventListener('click', function(event) {
             event.preventDefault();
 

@@ -20,4 +20,4 @@ COPY . .
 EXPOSE 1738
 
 # Run the web service on container startup.
-CMD [ "node", "app.js" ]
+CMD [ "node", "./bin/www" ]
