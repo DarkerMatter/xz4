@@ -86,11 +86,14 @@ router.get('/dashboard', checkAuthentication, function(req, res) {
       return res.status(404).send('User not found');
     }
     const permissionsLevel = Number(user.permissionsLevel);
-    res.render('dashboard', { user: req.user, username: username, permissionsLevel: permissionsLevel });
+    const avatar = user.avatar;
+    const discordid = user.id;
+
+    res.render('dashboard', { user: req.user, username: username, permissionsLevel: permissionsLevel, avatar: avatar, discordid: discordid});
   });
 });
 
-router.get('/api/ct/latest', function(req, res) {
+router.get('/api/hd2/ct/latest', function(req, res) {
     const userApiKey = req.query.apikey || null;
 
     var db = new sqlite3.Database('./db/users.db', sqlite3.OPEN_READONLY, (err) => {
@@ -178,7 +181,7 @@ function downloadCTWithKey(apiKey, res) {
         });
 }
 
-router.get('/api/bundle/latest', function(req, res) {
+router.get('/api/hd2/bundle/latest', function(req, res) {
     const userApiKey = req.query.apikey || null;
 
     var db = new sqlite3.Database('./db/users.db', sqlite3.OPEN_READONLY, (err) => {

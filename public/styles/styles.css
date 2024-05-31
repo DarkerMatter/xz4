@@ -5,15 +5,17 @@ body, h1, p, a {
     font-family: Arial, sans-serif;
 }
 
-/* Style for the body */
 body {
-    background-color: #1f2226;
+    background-color: #09090D;
     color: #ffffff;
-    padding: 20px;
     line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100vw; /* Make sure the body fills up the entire screen. */
+    min-height: 100vh;
 }
 
-/* Style for headers */
 h1 {
     color: #ffffff;
     background-color: #ad1f56;
@@ -24,13 +26,11 @@ h1 {
     font-size: 24px;
 }
 
-/* Paragraph styles */
 p {
     margin-bottom: 10px;
     padding-left: 20px;
 }
 
-/* Link styles */
 a {
     color: #666;
     text-decoration: none;
@@ -58,10 +58,112 @@ a:hover {
     background-color: #0056b3;
 }
 
-/* Additional styling for special paragraphs like the footer */
 p:last-of-type {
     color: #666;
     margin-top: 20px;
     text-align: center;
     font-size: 14px;
+}
+
+.navbar {
+    flex-shrink: 0;
+    background-color: #0F0F17 !important;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: 80px; /* Increase the height of the navbar to 80px because the default navbar height is 30px */
+}
+
+#primary-layout {
+    display: flex;
+    flex-direction: column; /*NOTE: Change this from column to row if necessary.*/
+    width: auto;
+}
+
+#main-container {
+    margin-right: 15px;
+    margin-left: 265px;
+    margin-top: 15px;
+    margin-bottom: 30px;
+    background-color: #0F0F17;
+    border: 1px solid #0F0F17;
+    border-radius: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#sidebar {
+    position: fixed;
+    width: 250px;
+    height: 100vh;
+    background-color: #0F0F17;
+    padding: 20px 10px;
+    overflow-y: auto;
+    flex: 0 0 250px;
+}
+
+.profile-box {
+    border: 1px solid #808080; /* Change border color to gray */
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+    border-radius: 15px; /* Add border radius to make box rounded */
+    width: 90%; /* Reduce box size to half of sidebar */
+    margin: auto; /* Center the box */
+    margin-bottom: 20px;
+}
+
+.profile-box img {
+    width: 50%;
+    height: auto;
+}
+
+.sidebar-menu {
+    list-style-type: none;   /* remove default bullets */
+    padding-left: 0;
+}
+
+.sidebar-menu li a {
+    display: block;
+    color: #cccccc;
+    text-decoration: none;
+    padding: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    transition: color 0.3s;
+    font-weight: normal;  /* Make the text not bold */
+    border-radius: 10px;  /* Add rounded corners */
+    width: 80%;  /* Set the width to 80% of the sidebar */
+    margin: 10px auto;  /* Center the link container */
+}
+
+.sidebar-menu li a:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+.sidebar-menu li a .link-container {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-menu li a .link-container i {
+    margin-right: 5px;
+}
+
+.footer-container {
+    flex-shrink: 0;
+    box-sizing: border-box;
+    text-align: center;
+    margin-top: 30px; /* If you wish to keep some space above the footer */
+    margin-bottom: 20px; /* If you wish to keep some space below the footer */
+}
+
+#content-layout {
+    display: flex;
+}
+
+.spacer {
+    flex-grow: 1;
 }
